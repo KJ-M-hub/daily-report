@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs } from "firebase/firestore";
+import { getFirestore, collection, getDocs, addDoc } from "firebase/firestore";
 
 // 設定情報
 const firebaseConfig = {
@@ -25,7 +25,7 @@ const fetchHistoryData = async () => {
   const querySnapshot = await getDocs(collection(db, "reports"));
 
   // データをテーブル表の形式に合わせてHTMLに挿入
-  querySnapshot.forEach(() => {
+  querySnapshot.forEach((doc) => {
     console.log(`${doc.id} => ${doc.data()}`);
     tags += `<tr><td>${doc.data().date}</td><td>${doc.data().name}</td><td>${doc.data().work}</td><td>${doc.data().comment}</td></tr>`
   });
@@ -36,3 +36,26 @@ const fetchHistoryData = async () => {
 if(document.getElementById("js-history")) {
   fetchHistoryData();
 }
+
+// Cloud Firestoreにデータを送信する
+const submitData = async (e) => {
+  e.preventDefault();
+
+  const formData = new FormData(e.target);
+
+  try{
+    const docRef = await addDoc(collection(db, "reports"), {
+      date: new Date(),
+      name: formData.get("name"),
+      work: formData.get("work"),
+      comment: formData.get("comment")
+    });
+    console.log("Document written with ID: ", docRef.id);
+  } catch (e) {
+    console.error("Error adding document: ", e );
+  }
+}
+
+if(document.getElementById("js-form")) {
+  document.getElementById("js-form").addEventListener("submit",(e) => submitData(e));
+};
