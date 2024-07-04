@@ -2,6 +2,7 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, getDocs, addDoc } from "firebase/firestore";
 import { fetchHistoryData } from "./my-modules/fetch-history-data";
+import { submitData } from "./my-modules/submit-data";
 
 // 設定情報
 const firebaseConfig = {
@@ -24,24 +25,7 @@ if(document.getElementById("js-history")) {
 }
 
 // Cloud Firestoreにデータを送信する
-const submitData = async (e) => {
-  e.preventDefault();
-
-  const formData = new FormData(e.target);
-
-  try{
-    const docRef = await addDoc(collection(db, "reports"), {
-      date: new Date(),
-      name: formData.get("name"),
-      work: formData.get("work"),
-      comment: formData.get("comment")
-    });
-    console.log("Document written with ID: ", docRef.id);
-  } catch (e) {
-    console.error("Error adding document: ", e );
-  }
-}
-
 if(document.getElementById("js-form")) {
-  document.getElementById("js-form").addEventListener("submit",(e) => submitData(e));
+  document.getElementById("js-form").addEventListener("submit",(e) => 
+    submitData(e, addDoc, collection, db));
 };
