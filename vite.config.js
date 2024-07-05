@@ -1,4 +1,3 @@
-import { read } from 'fs';
 import { resolve } from 'path'
 import { defineConfig } from 'vite'
 
